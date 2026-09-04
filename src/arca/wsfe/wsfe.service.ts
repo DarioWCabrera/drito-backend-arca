@@ -295,7 +295,11 @@ export class WsfeService {
             this.decodeXmlEntities(
               bloqueado ?? "",
             ),
-          fechaBaja: fechaBaja || null,
+          fechaBaja:
+            fechaBaja &&
+              fechaBaja.trim().toUpperCase() !== "NULL"
+              ? fechaBaja.trim()
+              : null,
         };
       })
       .filter((item) =>
