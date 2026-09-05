@@ -17,13 +17,14 @@ import { ConsultarComprobanteQueryDto } from "../dto/consultar-comprobante-query
 import { PrepararCaeCDto } from "../dto/preparar-cae-c.dto";
 import { EmitirCaeCIdempotenteDto } from "../dto/emitir-cae-c-idempotente.dto";
 import { WsfeService } from "./wsfe.service";
+import { UltimoAutorizadoQueryDto } from "../dto/ultimo-autorizado-query.dto";
 
 @Controller("arca/wsfe")
 @UseGuards(SupabaseAuthGuard)
 export class WsfeController {
   constructor(
     private readonly wsfe: WsfeService,
-  ) {}
+  ) { }
 
   @Get(":comercioId/tipos-comprobante")
   getTiposComprobante(
@@ -227,18 +228,14 @@ export class WsfeController {
       new ParseUUIDPipe(),
     )
     comercioId: string,
-    @Query() query: AmbienteQueryDto,
-    @Query("puntoVenta")
-    puntoVentaText: string,
-    @Query("tipoComprobante")
-    tipoComprobanteText: string,
+    @Query() query: UltimoAutorizadoQueryDto,
   ) {
     return this.wsfe.getUltimoAutorizado(
       user,
       comercioId,
       query.ambiente,
-      Number(puntoVentaText),
-      Number(tipoComprobanteText),
+      query.puntoVenta,
+      query.tipoComprobante,
     );
   }
 

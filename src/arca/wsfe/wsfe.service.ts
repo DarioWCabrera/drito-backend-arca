@@ -1864,7 +1864,7 @@ export class WsfeService {
       );
     }
 
-    if (!/^\\d{14}$/.test(codAut)) {
+    if (!/^\d{14}$/.test(codAut)) {
       throw new ConflictException(
         "El comprobante autorizado no tiene un codigo de autorizacion de 14 digitos.",
       );
@@ -2952,13 +2952,7 @@ export class WsfeService {
       ["facturacion.emitir"],
     );
 
-    if (ambiente !== "homologacion") {
-      throw new ConflictException(
-        "La emisión idempotente en producción permanece bloqueada hasta completar configuración y validación productiva.",
-      );
-    }
-
-    if (this.roundMoney(body.importeTributos ?? 0) !== 0) {
+      if (this.roundMoney(body.importeTributos ?? 0) !== 0) {
       throw new BadRequestException(
         "La emisión idempotente inicial de Factura C admite importeTributos = 0 hasta incorporar el detalle obligatorio de tributos.",
       );
