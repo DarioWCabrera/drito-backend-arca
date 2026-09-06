@@ -10,8 +10,8 @@
     "start:prod": "node dist/main"
   },
   "engines": {
-    "node": ">=20"
-  },
+  "node": ">=22"
+},
   "dependencies": {
     "@nestjs/common": "^11.0.0",
     "@nestjs/config": "^4.0.0",
