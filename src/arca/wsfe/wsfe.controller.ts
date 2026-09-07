@@ -18,6 +18,7 @@ import { PrepararCaeCDto } from "../dto/preparar-cae-c.dto";
 import { EmitirCaeCIdempotenteDto } from "../dto/emitir-cae-c-idempotente.dto";
 import { WsfeService } from "./wsfe.service";
 import { UltimoAutorizadoQueryDto } from "../dto/ultimo-autorizado-query.dto";
+import { Throttle } from "@nestjs/throttler";
 
 @Controller("arca/wsfe")
 @UseGuards(SupabaseAuthGuard)
@@ -62,7 +63,12 @@ export class WsfeController {
     );
   }
 
-
+  @Throttle({
+  default: {
+    limit: 20,
+    ttl: 60_000,
+  },
+})
   @Post(":comercioId/preparar-cae-c")
   prepararCaeC(
     @CurrentUser() user: AuthUser,
@@ -82,6 +88,12 @@ export class WsfeController {
     );
   }
 
+  @Throttle({
+  default: {
+    limit: 15,
+    ttl: 60_000,
+  },
+})
   @Post(":comercioId/persistir-cae-c")
   persistirCaeC(
     @CurrentUser() user: AuthUser,
@@ -101,7 +113,12 @@ export class WsfeController {
     );
   }
 
-
+  @Throttle({
+  default: {
+    limit: 20,
+    ttl: 60_000,
+  },
+})
   @Post(":comercioId/prevalidar-cae-c-idempotente")
   prevalidarCaeCIdempotente(
     @CurrentUser() user: AuthUser,
@@ -121,7 +138,12 @@ export class WsfeController {
     );
   }
 
-
+  @Throttle({
+  default: {
+    limit: 10,
+    ttl: 60_000,
+  },
+})
   @Post(":comercioId/emitir-cae-c-idempotente")
   emitirCaeCIdempotente(
     @CurrentUser() user: AuthUser,
@@ -141,6 +163,12 @@ export class WsfeController {
     );
   }
 
+  @Throttle({
+  default: {
+    limit: 10,
+    ttl: 60_000,
+  },
+})
   @Post(":comercioId/emitir-cae-c")
   emitirCaeC(
     @CurrentUser() user: AuthUser,
@@ -160,6 +188,12 @@ export class WsfeController {
     );
   }
 
+  @Throttle({
+  default: {
+    limit: 20,
+    ttl: 60_000,
+  },
+})
   @Post(":comercioId/prevalidar-cae-c")
   prevalidarCaeC(
     @CurrentUser() user: AuthUser,

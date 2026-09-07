@@ -12,6 +12,7 @@ import { CurrentUser } from "../../common/auth/current-user.decorator";
 import { SupabaseAuthGuard } from "../../common/auth/supabase-auth.guard";
 import { AmbienteQueryDto } from "../dto/ambiente-query.dto";
 import { WsaaService } from "./wsaa.service";
+import { Throttle } from "@nestjs/throttler";
 
 @Controller("arca/wsaa")
 @UseGuards(SupabaseAuthGuard)
@@ -20,6 +21,12 @@ export class WsaaController {
     private readonly wsaa: WsaaService,
   ) {}
 
+  @Throttle({
+  default: {
+    limit: 10,
+    ttl: 60_000,
+  },
+})
   @Post(":comercioId/autenticar")
   authenticate(
     @CurrentUser() user: AuthUser,

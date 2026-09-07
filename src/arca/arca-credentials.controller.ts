@@ -19,6 +19,7 @@ import type { AuthUser } from "../common/auth/auth-user.type";
 import { ArcaCredentialsService } from "./arca-credentials.service";
 import { UploadCredentialsDto } from "./dto/upload-credentials.dto";
 import { AmbienteQueryDto } from "./dto/ambiente-query.dto";
+import { Throttle } from "@nestjs/throttler";
 
 type UploadedCredentialFiles = {
   certificado?: Express.Multer.File[];
@@ -50,6 +51,12 @@ export class ArcaCredentialsController {
     );
   }
 
+  @Throttle({
+  default: {
+    limit: 5,
+    ttl: 60_000,
+  },
+})
   @Post(":comercioId")
   @UseInterceptors(
     FileFieldsInterceptor(
@@ -107,6 +114,12 @@ export class ArcaCredentialsController {
     });
   }
 
+  @Throttle({
+  default: {
+    limit: 10,
+    ttl: 60_000,
+  },
+})
   @Post(":comercioId/validar")
   validateCredentials(
     @CurrentUser() user: AuthUser,
@@ -125,6 +138,12 @@ export class ArcaCredentialsController {
       );
   }
 
+  @Throttle({
+  default: {
+    limit: 5,
+    ttl: 60_000,
+  },
+})
   @Delete(":comercioId")
   deleteCredentials(
     @CurrentUser() user: AuthUser,

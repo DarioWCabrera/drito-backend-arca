@@ -13,6 +13,7 @@ import type { AuthUser } from "../common/auth/auth-user.type";
 import { SupabaseAuthGuard } from "../common/auth/supabase-auth.guard";
 import { DritoAssistantService } from "./drito-assistant.service";
 import { DritoAssistantMessageDto } from "./dto/drito-assistant-message.dto";
+import { Throttle } from "@nestjs/throttler";
 
 type AuthenticatedRequest = Request & {
   authUser?: AuthUser;
@@ -102,6 +103,12 @@ export class DritoAssistantController {
     );
   }
 
+  @Throttle({
+  default: {
+    limit: 20,
+    ttl: 60_000,
+  },
+})
   @Post(
     ":comercioId/acciones/:accionId/confirmar-venta",
   )
@@ -118,6 +125,12 @@ export class DritoAssistantController {
     );
   }
 
+  @Throttle({
+  default: {
+    limit: 20,
+    ttl: 60_000,
+  },
+})
   @Post(
     ":comercioId/acciones/:accionId/confirmar-compra",
   )
@@ -134,6 +147,12 @@ export class DritoAssistantController {
     );
   }
 
+  @Throttle({
+  default: {
+    limit: 20,
+    ttl: 60_000,
+  },
+})
   @Post(
     ":comercioId/acciones/:accionId/confirmar-pago-proveedor",
   )
@@ -150,6 +169,12 @@ export class DritoAssistantController {
     );
   }
 
+  @Throttle({
+  default: {
+    limit: 20,
+    ttl: 60_000,
+  },
+})
   @Post(
     ":comercioId/acciones/:accionId/confirmar-gasto",
   )
@@ -166,6 +191,12 @@ export class DritoAssistantController {
     );
   }
 
+  @Throttle({
+  default: {
+    limit: 20,
+    ttl: 60_000,
+  },
+})
   @Post(
     ":comercioId/acciones/:accionId/confirmar-stock-ajuste",
   )
@@ -182,6 +213,12 @@ export class DritoAssistantController {
     );
   }
 
+  @Throttle({
+  default: {
+    limit: 20,
+    ttl: 60_000,
+  },
+})
   @Post(
     ":comercioId/acciones/:accionId/confirmar-stock-salida",
   )
@@ -198,6 +235,12 @@ export class DritoAssistantController {
     );
   }
 
+  @Throttle({
+  default: {
+    limit: 20,
+    ttl: 60_000,
+  },
+})
   @Post(
     ":comercioId/acciones/:accionId/confirmar-stock",
   )
@@ -214,6 +257,12 @@ export class DritoAssistantController {
     );
   }
 
+  @Throttle({
+  default: {
+    limit: 20,
+    ttl: 60_000,
+  },
+})
   @Post(
     ":comercioId/acciones/:accionId/confirmar-cobro",
   )
@@ -230,6 +279,12 @@ export class DritoAssistantController {
     );
   }
 
+  @Throttle({
+  default: {
+    limit: 30,
+    ttl: 60_000,
+  },
+})
   @Post(":comercioId/mensaje")
   async procesarMensaje(
     @Req() request: AuthenticatedRequest,
