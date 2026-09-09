@@ -47,10 +47,7 @@ async function bootstrap() {
         return;
       }
 
-      callback(
-        new Error("Origen no permitido por CORS"),
-        false,
-      );
+      callback(null, false);
     },
     methods: [
       "GET",
