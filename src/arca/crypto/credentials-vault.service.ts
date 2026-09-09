@@ -16,6 +16,7 @@ import type {
 @Injectable()
 export class CredentialsVaultService {
   private readonly key: Buffer;
+  private readonly previousKey: Buffer | null;
 
   constructor() {
     this.key = Buffer.from(
@@ -26,6 +27,22 @@ export class CredentialsVaultService {
     if (this.key.length !== 32) {
       throw new InternalServerErrorException(
         "Clave maestra ARCA inválida",
+      );
+    }
+
+    const previousKeyRaw =
+      process.env.DRITO_ARCA_MASTER_KEY_PREVIOUS?.trim();
+
+    this.previousKey = previousKeyRaw
+      ? Buffer.from(previousKeyRaw, "base64")
+      : null;
+
+    if (
+      this.previousKey &&
+      this.previousKey.length !== 32
+    ) {
+      throw new InternalServerErrorException(
+        "Clave maestra ARCA anterior inválida",
       );
     }
   }
@@ -92,39 +109,55 @@ export class CredentialsVaultService {
       );
     }
 
-    const decipher = createDecipheriv(
-      "aes-256-gcm",
-      this.key,
-      Buffer.from(envelope.iv, "base64"),
-    );
+    const decryptWithKey = (
+      key: Buffer,
+    ): CredentialBundleV1 => {
+      const decipher = createDecipheriv(
+        "aes-256-gcm",
+        key,
+        Buffer.from(envelope.iv, "base64"),
+      );
 
-    decipher.setAAD(
-      Buffer.from(aad, "utf8"),
-    );
+      decipher.setAAD(
+        Buffer.from(aad, "utf8"),
+      );
 
-    decipher.setAuthTag(
-      Buffer.from(
-        envelope.authTag,
-        "base64",
-      ),
-    );
-
-    const plaintext = Buffer.concat([
-      decipher.update(
+      decipher.setAuthTag(
         Buffer.from(
-          envelope.ciphertext,
+          envelope.authTag,
           "base64",
         ),
-      ),
-      decipher.final(),
-    ]);
+      );
+
+      const plaintext = Buffer.concat([
+        decipher.update(
+          Buffer.from(
+            envelope.ciphertext,
+            "base64",
+          ),
+        ),
+        decipher.final(),
+      ]);
+
+      try {
+        return JSON.parse(
+          plaintext.toString("utf8"),
+        ) as CredentialBundleV1;
+      } finally {
+        plaintext.fill(0);
+      }
+    };
 
     try {
-      return JSON.parse(
-        plaintext.toString("utf8"),
-      ) as CredentialBundleV1;
-    } finally {
-      plaintext.fill(0);
+      return decryptWithKey(this.key);
+    } catch (currentKeyError) {
+      if (!this.previousKey) {
+        throw currentKeyError;
+      }
+
+      return decryptWithKey(
+        this.previousKey,
+      );
     }
   }
 }

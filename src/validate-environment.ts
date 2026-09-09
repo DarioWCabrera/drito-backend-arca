@@ -37,6 +37,22 @@ export function validateEnvironment(): void {
     );
   }
 
+  const previousMasterKeyRaw =
+    process.env.DRITO_ARCA_MASTER_KEY_PREVIOUS?.trim();
+
+  if (previousMasterKeyRaw) {
+    const previousMasterKey = Buffer.from(
+      previousMasterKeyRaw,
+      "base64",
+    );
+
+    if (previousMasterKey.length !== 32) {
+      throw new Error(
+        "DRITO_ARCA_MASTER_KEY_PREVIOUS debe contener exactamente 32 bytes en Base64.",
+      );
+    }
+  }
+
   const origins = (
     process.env.DRITO_FRONTEND_URLS ?? ""
   )
